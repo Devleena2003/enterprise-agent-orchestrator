@@ -1,0 +1,24 @@
+services:
+  agent:
+    build: .
+    container_name: enterprise_agent_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Reach Project 1 running on host port 8000 from inside Docker
+      RAG_ENGINE_BASE_URL: ${RAG_ENGINE_BASE_URL:-http://host.docker.internal:8000}
+      CHECKPOINT_DB_PATH: /app/data/agent_checkpoints.db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8001:8001"
+    volumes:
+      - agent_data:/app/data
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  agent_data:
